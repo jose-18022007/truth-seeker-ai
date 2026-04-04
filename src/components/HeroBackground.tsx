@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-const PARTICLE_COUNT = 40;
+const PARTICLE_COUNT = 55;
 
 const HeroBackground = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -23,6 +23,8 @@ const HeroBackground = () => {
       vy: number;
       vz: number;
       size: number;
+      pulse: number;
+      pulseSpeed: number;
     }[] = [];
 
     const resize = () => {
@@ -42,19 +44,21 @@ const HeroBackground = () => {
         particles.push({
           x: Math.random() * width,
           y: Math.random() * height,
-          z: Math.random() * 400 + 100,
-          vx: (Math.random() - 0.5) * 0.3,
-          vy: (Math.random() - 0.5) * 0.3,
-          vz: (Math.random() - 0.5) * 0.4,
-          size: Math.random() * 3 + 1.5,
+          z: Math.random() * 300 + 200,
+          vx: (Math.random() - 0.5) * 0.25,
+          vy: (Math.random() - 0.5) * 0.25,
+          vz: (Math.random() - 0.5) * 0.3,
+          size: Math.random() * 1.2 + 0.6,
+          pulse: Math.random() * Math.PI * 2,
+          pulseSpeed: Math.random() * 0.02 + 0.01,
         });
       }
     };
 
     const drawGrid = () => {
-      const spacing = 48;
-      ctx.strokeStyle = "hsla(221,83%,53%,0.06)";
-      ctx.lineWidth = 0.5;
+      const spacing = 40;
+      ctx.strokeStyle = "hsla(221,83%,53%,0.1)";
+      ctx.lineWidth = 0.6;
       for (let x = 0; x <= width; x += spacing) {
         ctx.beginPath();
         ctx.moveTo(x, 0);
@@ -67,51 +71,62 @@ const HeroBackground = () => {
         ctx.lineTo(width, y);
         ctx.stroke();
       }
+
+      // Draw subtle dots at intersections
+      ctx.fillStyle = "hsla(221,83%,53%,0.12)";
+      for (let x = 0; x <= width; x += spacing) {
+        for (let y = 0; y <= height; y += spacing) {
+          ctx.beginPath();
+          ctx.arc(x, y, 1, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
     };
 
     const draw = () => {
       ctx.clearRect(0, 0, width, height);
       drawGrid();
 
-      // Update & draw particles
       for (const p of particles) {
         p.x += p.vx;
         p.y += p.vy;
         p.z += p.vz;
+        p.pulse += p.pulseSpeed;
 
         if (p.x < 0 || p.x > width) p.vx *= -1;
         if (p.y < 0 || p.y > height) p.vy *= -1;
-        if (p.z < 80 || p.z > 500) p.vz *= -1;
+        if (p.z < 150 || p.z > 500) p.vz *= -1;
 
-        const scale = 300 / p.z;
+        const scale = 250 / p.z;
         const r = p.size * scale;
-        const alpha = Math.min(scale * 0.6, 0.7);
+        const pulseAlpha = 0.5 + Math.sin(p.pulse) * 0.3;
+        const alpha = Math.min(scale * 0.5, 0.6) * pulseAlpha;
 
-        // Glow
-        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r * 4);
-        gradient.addColorStop(0, `hsla(221,83%,53%,${alpha * 0.25})`);
-        gradient.addColorStop(1, `hsla(221,83%,53%,0)`);
+        // Soft glow
+        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r * 3);
+        gradient.addColorStop(0, `hsla(221,83%,60%,${alpha * 0.2})`);
+        gradient.addColorStop(1, `hsla(221,83%,60%,0)`);
         ctx.fillStyle = gradient;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, r * 4, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, r * 3, 0, Math.PI * 2);
         ctx.fill();
 
-        // Particle
-        ctx.fillStyle = `hsla(221,83%,53%,${alpha})`;
+        // Particle dot
+        ctx.fillStyle = `hsla(221,83%,60%,${alpha})`;
         ctx.beginPath();
         ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      // Draw connections
-      ctx.lineWidth = 0.5;
+      // Connection lines
+      ctx.lineWidth = 0.4;
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 150) {
-            const alpha = (1 - dist / 150) * 0.15;
+          if (dist < 120) {
+            const alpha = (1 - dist / 120) * 0.1;
             ctx.strokeStyle = `hsla(221,83%,53%,${alpha})`;
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
@@ -137,7 +152,6 @@ const HeroBackground = () => {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
       <canvas ref={canvasRef} className="absolute inset-0" />
-      {/* Ambient glows */}
       <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-primary/5 blur-3xl" />
       <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full bg-accent/5 blur-3xl" />
     </div>

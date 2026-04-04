@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { Shield, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 
 const Navbar = () => {
   const location = useLocation();
@@ -17,11 +17,8 @@ const Navbar = () => {
   }, []);
 
   return (
-    <div className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4">
-      <motion.nav
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+    <header className="fixed top-0 left-0 right-0 z-50 flex justify-center p-4">
+      <nav
         className={`w-full max-w-4xl rounded-2xl border transition-all duration-300 ${
           scrolled
             ? "bg-background/80 backdrop-blur-xl border-border shadow-elevated"
@@ -29,7 +26,7 @@ const Navbar = () => {
         }`}
       >
         <div className="flex items-center justify-between h-14 px-5">
-          <Link to="/" className="flex items-center gap-2 group">
+          <Link to="/" className="flex items-center gap-2 shrink-0">
             <div className="gradient-primary p-1.5 rounded-lg">
               <Shield className="h-4 w-4 text-primary-foreground" />
             </div>
@@ -39,7 +36,7 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop */}
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-6 shrink-0">
             <Link
               to="/"
               className={`text-sm font-medium transition-colors ${isHome ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
@@ -85,8 +82,8 @@ const Navbar = () => {
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.nav>
-    </div>
+      </nav>
+    </header>
   );
 };
 

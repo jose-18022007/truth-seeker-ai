@@ -24,7 +24,7 @@ const steps = [
 
 const Landing = () => {
   return (
-    <div className="relative">
+    <div className="relative pt-20">
       {/* Hero */}
       <section className="relative min-h-[85vh] flex items-center">
         <HeroBackground />

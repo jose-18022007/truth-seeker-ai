@@ -57,7 +57,7 @@ const Analyze = ({ onAnalyze }: AnalyzePageProps) => {
           </div>
 
           {/* Mode selector */}
-          <div className="neuro-inset flex gap-2 p-1.5 mb-8 max-w-xs mx-auto !rounded-xl">
+          <div className="neuro-glass flex gap-2 p-1.5 mb-8 max-w-xs mx-auto !rounded-xl">
             {(["text", "image"] as const).map((m) => (
               <button
                 key={m}
@@ -73,7 +73,7 @@ const Analyze = ({ onAnalyze }: AnalyzePageProps) => {
           </div>
 
           {/* Input area */}
-          <div className="neuro-card p-6">
+          <div className="neuro-glass p-6">
             {mode === "text" ? (
               <div className="neuro-input p-4 !rounded-xl">
                 <textarea

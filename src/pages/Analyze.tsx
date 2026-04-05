@@ -73,7 +73,7 @@ const Analyze = ({ onAnalyze }: AnalyzePageProps) => {
           </div>
 
           {/* Input area */}
-          <div className="neuro-card p-6">
+          <div className="neuro-glass p-6">
             {mode === "text" ? (
               <div className="neuro-input p-4 !rounded-xl">
                 <textarea

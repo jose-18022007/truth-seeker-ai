@@ -17,17 +17,23 @@ const Navbar = () => {
   }, []);
 
   return (
-    <nav
-      className={`fixed left-1/2 top-4 z-50 w-[calc(100vw-2rem)] max-w-4xl -translate-x-1/2 rounded-2xl border transition-all duration-300 ${
-        scrolled
-          ? "bg-background/80 backdrop-blur-xl border-border shadow-elevated"
-          : "bg-background/50 backdrop-blur-md border-border/40"
+    <motion.nav
+      initial={{ y: -60, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className={`fixed left-1/2 top-4 z-50 w-[calc(100vw-2rem)] max-w-4xl -translate-x-1/2 rounded-2xl transition-all duration-300 neuro-card-flat ${
+        scrolled ? "!shadow-none" : ""
       }`}
+      style={scrolled ? {
+        boxShadow: "-10px -10px 20px hsla(0,0%,100%,0.8), 10px 10px 20px hsla(220,30%,75%,0.5)",
+        background: "hsla(210,25%,94%,0.85)",
+        backdropFilter: "blur(16px)",
+      } : undefined}
     >
       <div className="flex h-14 items-center justify-between px-5">
         <Link to="/" className="flex shrink-0 items-center gap-2">
-          <div className="gradient-primary rounded-lg p-1.5">
-            <Shield className="h-4 w-4 text-primary-foreground" />
+          <div className="neuro-icon-raised rounded-lg p-1.5 w-8 h-8">
+            <Shield className="h-4 w-4 text-primary" />
           </div>
           <span className="text-lg font-bold tracking-tight text-foreground">
             Truth<span className="gradient-text">Weave</span>
@@ -48,13 +54,13 @@ const Navbar = () => {
             Analyze
           </Link>
           <Link to="/analyze">
-            <button className="gradient-primary rounded-lg px-4 py-1.5 text-sm font-semibold text-primary-foreground transition-all duration-200 hover:scale-105 hover:shadow-lg">
+            <button className="neuro-btn-blue px-5 py-2 text-sm font-semibold">
               Start Checking
             </button>
           </Link>
         </div>
 
-        <button className="text-foreground md:hidden" onClick={() => setMobileOpen(!mobileOpen)}>
+        <button className="text-foreground md:hidden neuro-btn w-9 h-9 flex items-center justify-center !rounded-lg !p-0" onClick={() => setMobileOpen(!mobileOpen)}>
           {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
@@ -65,8 +71,9 @@ const Navbar = () => {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden border-t border-border/50 md:hidden"
+            className="overflow-hidden md:hidden"
           >
+            <div className="neuro-divider mx-4" />
             <div className="flex flex-col gap-3 p-4">
               <Link to="/" className="text-sm font-medium text-foreground" onClick={() => setMobileOpen(false)}>
                 Home
@@ -75,7 +82,7 @@ const Navbar = () => {
                 Analyze
               </Link>
               <Link to="/analyze" onClick={() => setMobileOpen(false)}>
-                <button className="gradient-primary w-full rounded-lg py-2.5 text-sm font-semibold text-primary-foreground">
+                <button className="neuro-btn-blue w-full py-2.5 text-sm font-semibold">
                   Start Checking
                 </button>
               </Link>
@@ -83,7 +90,7 @@ const Navbar = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+    </motion.nav>
   );
 };
 

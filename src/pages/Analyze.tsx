@@ -2,7 +2,6 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Type, Image, Upload, X, ArrowRight, AlertCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import HeroBackground from "@/components/HeroBackground";
 
 interface AnalyzePageProps {
@@ -58,13 +57,13 @@ const Analyze = ({ onAnalyze }: AnalyzePageProps) => {
           </div>
 
           {/* Mode selector */}
-          <div className="flex gap-2 p-1 bg-muted rounded-xl mb-8 max-w-xs mx-auto">
+          <div className="neuro-inset flex gap-2 p-1.5 mb-8 max-w-xs mx-auto !rounded-xl">
             {(["text", "image"] as const).map((m) => (
               <button
                 key={m}
                 onClick={() => { setMode(m); setError(""); }}
                 className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                  mode === m ? "bg-background shadow-card text-foreground" : "text-muted-foreground hover:text-foreground"
+                  mode === m ? "neuro-btn-blue !rounded-lg" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {m === "text" ? <Type className="h-4 w-4" /> : <Image className="h-4 w-4" />}
@@ -74,23 +73,25 @@ const Analyze = ({ onAnalyze }: AnalyzePageProps) => {
           </div>
 
           {/* Input area */}
-          <div className="rounded-2xl border border-border bg-background p-6 shadow-card">
+          <div className="neuro-card p-6">
             {mode === "text" ? (
-              <textarea
-                value={text}
-                onChange={(e) => { setText(e.target.value); setError(""); }}
-                placeholder="e.g., Drinking hot water cures COVID instantly..."
-                rows={6}
-                className="w-full bg-transparent text-foreground placeholder:text-muted-foreground resize-none focus:outline-none text-base leading-relaxed"
-              />
+              <div className="neuro-input p-4 !rounded-xl">
+                <textarea
+                  value={text}
+                  onChange={(e) => { setText(e.target.value); setError(""); }}
+                  placeholder="e.g., Drinking hot water cures COVID instantly..."
+                  rows={6}
+                  className="w-full bg-transparent text-foreground placeholder:text-muted-foreground resize-none focus:outline-none text-base leading-relaxed"
+                />
+              </div>
             ) : (
               <div>
                 {preview ? (
-                  <div className="relative">
+                  <div className="relative neuro-inset p-4 !rounded-xl">
                     <img src={preview} alt="Preview" className="w-full max-h-64 object-contain rounded-xl" />
                     <button
                       onClick={() => handleFileChange(null)}
-                      className="absolute top-2 right-2 p-1.5 rounded-full bg-foreground/80 text-background hover:bg-foreground transition-colors"
+                      className="absolute top-6 right-6 neuro-btn w-8 h-8 !rounded-full flex items-center justify-center !p-0"
                     >
                       <X className="h-4 w-4" />
                     </button>
@@ -98,9 +99,11 @@ const Analyze = ({ onAnalyze }: AnalyzePageProps) => {
                 ) : (
                   <button
                     onClick={() => fileRef.current?.click()}
-                    className="w-full py-16 border-2 border-dashed border-border rounded-xl flex flex-col items-center gap-3 text-muted-foreground hover:border-primary/40 hover:text-primary transition-colors"
+                    className="w-full py-16 neuro-inset !rounded-xl flex flex-col items-center gap-3 text-muted-foreground hover:text-primary transition-colors"
                   >
-                    <Upload className="h-10 w-10" />
+                    <div className="neuro-icon-raised w-14 h-14">
+                      <Upload className="h-7 w-7" />
+                    </div>
                     <span className="text-sm font-medium">Click to upload or drag & drop</span>
                     <span className="text-xs">JPG, PNG, WebP — Max 10MB</span>
                   </button>
@@ -121,15 +124,13 @@ const Analyze = ({ onAnalyze }: AnalyzePageProps) => {
                 <span className="text-xs text-muted-foreground">{text.length} characters</span>
               )}
               <div className={mode === "image" ? "w-full" : "ml-auto"}>
-                <Button
-                  variant="hero"
-                  size="lg"
-                  className={`rounded-xl ${mode === "image" ? "w-full" : ""}`}
+                <button
+                  className={`neuro-btn-blue px-8 py-3 font-semibold text-base inline-flex items-center gap-2 rounded-xl ${mode === "image" ? "w-full justify-center" : ""}`}
                   onClick={handleSubmit}
                 >
                   Analyze Claim
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
+                  <ArrowRight className="h-5 w-5" />
+                </button>
               </div>
             </div>
           </div>

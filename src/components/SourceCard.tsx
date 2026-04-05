@@ -15,7 +15,7 @@ const SourceCard = ({ source }: { source: Source }) => {
       href={source.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-primary/30 hover:shadow-card bg-card transition-all duration-200 group"
+      className="flex items-center gap-3 p-4 neuro-card-flat !rounded-xl transition-all duration-200 group"
     >
       <img
         src={`https://www.google.com/s2/favicons?domain=${domain}&sz=32`}

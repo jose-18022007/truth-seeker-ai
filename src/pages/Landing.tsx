@@ -134,7 +134,7 @@ const Landing = () => {
       <section className="py-24">
         <div className="container mx-auto px-4">
           <motion.div
-            className="max-w-2xl mx-auto text-center neuro-card p-12 md:p-16 relative overflow-hidden"
+            className="max-w-2xl mx-auto text-center neuro-glass-gradient p-12 md:p-16 relative overflow-hidden"
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}

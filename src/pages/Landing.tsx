@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Shield, Search, Brain, FileCheck, ArrowRight, Zap, Globe, Lock } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import HeroBackground from "@/components/HeroBackground";
 
 const fadeUp = {
@@ -34,7 +33,7 @@ const Landing = () => {
             initial="hidden"
             animate="visible"
           >
-            <motion.div custom={0} variants={fadeUp} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/5 border border-primary/10 text-sm text-primary font-medium mb-8">
+            <motion.div custom={0} variants={fadeUp} className="neuro-badge-inset inline-flex items-center gap-2 px-4 py-2 text-sm text-primary font-medium mb-8">
               <Shield className="h-4 w-4" />
               AI-Powered Fact Checking
             </motion.div>
@@ -50,15 +49,15 @@ const Landing = () => {
 
             <motion.div custom={3} variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link to="/analyze">
-                <Button variant="hero" size="lg" className="text-base px-8 py-6 rounded-xl">
+                <button className="neuro-btn-blue text-base px-8 py-4 font-semibold inline-flex items-center gap-2 rounded-xl">
                   Start Fact-Checking
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
+                  <ArrowRight className="h-5 w-5" />
+                </button>
               </Link>
               <a href="#how-it-works">
-                <Button variant="outline" size="lg" className="text-base px-8 py-6 rounded-xl">
+                <button className="neuro-btn text-base px-8 py-4 font-semibold text-foreground rounded-xl">
                   How It Works
-                </Button>
+                </button>
               </a>
             </motion.div>
           </motion.div>
@@ -66,7 +65,7 @@ const Landing = () => {
       </section>
 
       {/* Features */}
-      <section className="py-24 bg-card">
+      <section className="py-24">
         <div className="container mx-auto px-4">
           <motion.div className="text-center mb-16" initial="hidden" whileInView="visible" viewport={{ once: true }}>
             <motion.h2 custom={0} variants={fadeUp} className="text-3xl md:text-4xl font-bold text-foreground mb-4">
@@ -86,10 +85,10 @@ const Landing = () => {
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true }}
-                className="p-6 rounded-2xl border border-border bg-background hover:shadow-elevated hover:border-primary/20 transition-all duration-300 group"
+                className="neuro-card p-6 group"
               >
-                <div className="w-12 h-12 rounded-xl gradient-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <f.icon className="h-6 w-6 text-primary-foreground" />
+                <div className="neuro-icon-raised w-14 h-14 mb-4 group-hover:scale-110 transition-transform">
+                  <f.icon className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="font-semibold text-foreground mb-2">{f.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
@@ -120,14 +119,11 @@ const Landing = () => {
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true }}
-                className="relative text-center"
+                className="relative text-center neuro-card-flat p-8"
               >
-                <div className="text-6xl font-extrabold gradient-text opacity-20 mb-4">{s.num}</div>
+                <div className="text-5xl font-extrabold gradient-text opacity-30 mb-4">{s.num}</div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">{s.title}</h3>
                 <p className="text-sm text-muted-foreground">{s.desc}</p>
-                {i < steps.length - 1 && (
-                  <ArrowRight className="hidden md:block absolute top-10 -right-6 text-border h-6 w-6" />
-                )}
               </motion.div>
             ))}
           </div>
@@ -135,33 +131,37 @@ const Landing = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-24 bg-card">
+      <section className="py-24">
         <div className="container mx-auto px-4">
           <motion.div
-            className="max-w-2xl mx-auto text-center gradient-primary rounded-3xl p-12 md:p-16 shadow-elevated"
+            className="max-w-2xl mx-auto text-center neuro-card p-12 md:p-16 relative overflow-hidden"
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
           >
-            <FileCheck className="h-12 w-12 text-primary-foreground mx-auto mb-6 opacity-90" />
-            <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
-              Ready to verify the truth?
-            </h2>
-            <p className="text-primary-foreground/80 mb-8 text-lg">
-              Start analyzing claims now — it's fast, free, and backed by trusted sources.
-            </p>
-            <Link to="/analyze">
-              <Button size="lg" className="bg-background text-foreground hover:bg-background/90 text-base px-8 py-6 rounded-xl font-semibold">
-                Get Started
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
+            <div className="absolute inset-0 gradient-primary opacity-90 rounded-[1.5rem]" />
+            <div className="relative z-10">
+              <FileCheck className="h-12 w-12 text-primary-foreground mx-auto mb-6 opacity-90" />
+              <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground mb-4">
+                Ready to verify the truth?
+              </h2>
+              <p className="text-primary-foreground/80 mb-8 text-lg">
+                Start analyzing claims now — it's fast, free, and backed by trusted sources.
+              </p>
+              <Link to="/analyze">
+                <button className="neuro-btn bg-background text-foreground font-semibold text-base px-8 py-4 rounded-xl inline-flex items-center gap-2">
+                  Get Started
+                  <ArrowRight className="h-5 w-5" />
+                </button>
+              </Link>
+            </div>
           </motion.div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-8 border-t border-border">
+      <footer className="py-8">
+        <div className="neuro-divider mx-8 mb-8" />
         <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <Shield className="h-4 w-4 text-primary" />

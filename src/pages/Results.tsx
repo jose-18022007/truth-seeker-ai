@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Download, Share2, RotateCcw, Clock, ShieldCheck } from "lucide-react";
 import confetti from "canvas-confetti";
-import { Button } from "@/components/ui/button";
 import VerdictBadge from "@/components/VerdictBadge";
 import ScoreRing from "@/components/ScoreRing";
 import SourceCard from "@/components/SourceCard";
@@ -72,7 +71,6 @@ const Results = ({ inputData }: { inputData: AnalysisInput | null }) => {
       setLoading(true);
       setError(null);
 
-      // If no API URL, use demo mode
       if (!API_URL) {
         await new Promise((r) => setTimeout(r, 2500));
         setData(DEMO_RESPONSE);
@@ -99,7 +97,6 @@ const Results = ({ inputData }: { inputData: AnalysisInput | null }) => {
         const json = await res.json();
         setData(json);
       } catch (err: unknown) {
-        // Fallback to demo
         await new Promise((r) => setTimeout(r, 2000));
         setData(DEMO_RESPONSE);
       } finally {
@@ -148,10 +145,10 @@ const Results = ({ inputData }: { inputData: AnalysisInput | null }) => {
   if (error || !data) {
     return (
       <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12">
-        <div className="text-center max-w-md mx-auto px-4">
+        <div className="text-center max-w-md mx-auto px-4 neuro-card p-10">
           <h2 className="text-2xl font-bold text-foreground mb-4">Something went wrong</h2>
           <p className="text-muted-foreground mb-6">{error || "No results available."}</p>
-          <Button variant="hero" onClick={() => navigate("/analyze")}>Try Again</Button>
+          <button className="neuro-btn-blue px-6 py-3 font-semibold" onClick={() => navigate("/analyze")}>Try Again</button>
         </div>
       </div>
     );
@@ -167,10 +164,12 @@ const Results = ({ inputData }: { inputData: AnalysisInput | null }) => {
             {/* Header */}
             <div className="text-center space-y-4">
               <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", delay: 0.2 }}>
-                <ShieldCheck className="h-12 w-12 text-primary mx-auto" />
+                <div className="neuro-icon-raised w-16 h-16 mx-auto">
+                  <ShieldCheck className="h-8 w-8 text-primary" />
+                </div>
               </motion.div>
               <h1 className="text-3xl font-bold text-foreground">Analysis Complete</h1>
-              <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+              <div className="neuro-badge-inset inline-flex items-center gap-2 text-sm text-muted-foreground">
                 <Clock className="h-4 w-4" />
                 Processed in {(data.processing_time_ms / 1000).toFixed(1)}s
               </div>
@@ -181,7 +180,7 @@ const Results = ({ inputData }: { inputData: AnalysisInput | null }) => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="rounded-2xl border border-border bg-card p-6 shadow-card"
+              className="neuro-card p-6"
             >
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Claim Analyzed</p>
               <p className="text-lg font-medium text-foreground leading-relaxed">"{data.main_claim}"</p>
@@ -195,7 +194,7 @@ const Results = ({ inputData }: { inputData: AnalysisInput | null }) => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="rounded-2xl border border-border bg-card p-8 shadow-card"
+              className="neuro-card p-8"
             >
               <h2 className="text-lg font-semibold text-foreground mb-6 text-center">Score Breakdown</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -211,13 +210,14 @@ const Results = ({ inputData }: { inputData: AnalysisInput | null }) => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="rounded-2xl border border-border bg-card p-6 shadow-card space-y-5"
+              className="neuro-card p-6 space-y-5"
             >
               <div>
                 <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-2">Explanation</h3>
                 <p className="text-muted-foreground leading-relaxed">{data.truth_engine.explanation}</p>
               </div>
-              <div className="border-t border-border pt-5">
+              <div className="neuro-divider" />
+              <div>
                 <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-2">Corrected Information</h3>
                 <p className="text-muted-foreground leading-relaxed">{data.truth_engine.corrected_info}</p>
               </div>
@@ -229,7 +229,7 @@ const Results = ({ inputData }: { inputData: AnalysisInput | null }) => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                className="rounded-2xl border border-border bg-card p-6 shadow-card"
+                className="neuro-card p-6"
               >
                 <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-4">
                   Sources ({data.truth_engine.sources.length})
@@ -249,15 +249,15 @@ const Results = ({ inputData }: { inputData: AnalysisInput | null }) => {
               transition={{ delay: 0.7 }}
               className="flex flex-wrap gap-3 justify-center"
             >
-              <Button variant="outline" size="lg" className="rounded-xl" onClick={handleDownload}>
-                <Download className="mr-2 h-4 w-4" /> Download Report
-              </Button>
-              <Button variant="outline" size="lg" className="rounded-xl" onClick={handleShare}>
-                <Share2 className="mr-2 h-4 w-4" /> Share
-              </Button>
-              <Button variant="hero" size="lg" className="rounded-xl" onClick={() => navigate("/analyze")}>
-                <RotateCcw className="mr-2 h-4 w-4" /> New Analysis
-              </Button>
+              <button className="neuro-btn px-8 py-3 font-semibold text-foreground inline-flex items-center gap-2 rounded-xl" onClick={handleDownload}>
+                <Download className="h-4 w-4" /> Download Report
+              </button>
+              <button className="neuro-btn px-8 py-3 font-semibold text-foreground inline-flex items-center gap-2 rounded-xl" onClick={handleShare}>
+                <Share2 className="h-4 w-4" /> Share
+              </button>
+              <button className="neuro-btn-blue px-8 py-3 font-semibold inline-flex items-center gap-2 rounded-xl" onClick={() => navigate("/analyze")}>
+                <RotateCcw className="h-4 w-4" /> New Analysis
+              </button>
             </motion.div>
           </motion.div>
         </AnimatePresence>

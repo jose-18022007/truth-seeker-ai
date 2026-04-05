@@ -8,11 +8,11 @@ const SkeletonLoader = () => (
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: i * 0.15 }}
-        className="rounded-xl border border-border bg-card p-6 space-y-4"
+        className="neuro-card p-6 space-y-4"
       >
-        <div className="h-6 w-2/5 bg-muted rounded-md animate-pulse" />
-        <div className="h-4 w-4/5 bg-muted rounded-md animate-pulse" />
-        <div className="h-4 w-3/5 bg-muted rounded-md animate-pulse" />
+        <div className="h-6 w-2/5 rounded-md neuro-inset !rounded-lg" />
+        <div className="h-4 w-4/5 rounded-md neuro-inset !rounded-lg" />
+        <div className="h-4 w-3/5 rounded-md neuro-inset !rounded-lg" />
       </motion.div>
     ))}
     <p className="text-center text-sm text-muted-foreground animate-pulse">

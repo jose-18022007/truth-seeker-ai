@@ -18,10 +18,10 @@ const Navbar = () => {
 
   return (
     <motion.nav
-      initial={{ y: -60, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
+      initial={{ x: "-50%", y: -60, opacity: 0 }}
+      animate={{ x: "-50%", y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className={`fixed left-1/2 top-4 z-50 w-[calc(100vw-2rem)] max-w-4xl -translate-x-1/2 rounded-2xl transition-all duration-300 neuro-card-flat ${
+      className={`fixed left-1/2 top-4 z-50 w-[calc(100vw-2rem)] max-w-4xl rounded-2xl transition-all duration-300 neuro-card-flat ${
         scrolled ? "!shadow-none" : ""
       }`}
       style={scrolled ? {

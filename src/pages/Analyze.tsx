@@ -39,7 +39,7 @@ const Analyze = ({ onAnalyze }: AnalyzePageProps) => {
   };
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)] flex items-center py-12">
+    <div className="relative min-h-[calc(100vh-4rem)] flex items-center py-12 pt-24 bg-neuro-bg">
       <HeroBackground />
       <div className="container mx-auto px-4 relative z-10">
         <motion.div

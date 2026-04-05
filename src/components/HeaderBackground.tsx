@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 
-const PARTICLE_COUNT = 55;
+const PARTICLE_COUNT = 15; // Fewer particles for header area
 
-const HeroBackground = () => {
+const HeaderBackground = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -29,7 +29,7 @@ const HeroBackground = () => {
 
     const resize = () => {
       width = canvas.parentElement?.clientWidth ?? window.innerWidth;
-      height = canvas.parentElement?.clientHeight ?? window.innerHeight;
+      height = canvas.parentElement?.clientHeight ?? 160; // Fixed height for header
       canvas.width = width * devicePixelRatio;
       canvas.height = height * devicePixelRatio;
       canvas.style.width = `${width}px`;
@@ -45,26 +45,30 @@ const HeroBackground = () => {
           x: Math.random() * width,
           y: Math.random() * height,
           z: Math.random() * 300 + 200,
-          vx: (Math.random() - 0.5) * 0.25,
-          vy: (Math.random() - 0.5) * 0.25,
-          vz: (Math.random() - 0.5) * 0.3,
-          size: Math.random() * 1.2 + 0.6,
+          vx: (Math.random() - 0.5) * 0.15, // Slower movement for header
+          vy: (Math.random() - 0.5) * 0.15,
+          vz: (Math.random() - 0.5) * 0.2,
+          size: Math.random() * 0.8 + 0.4, // Smaller particles
           pulse: Math.random() * Math.PI * 2,
-          pulseSpeed: Math.random() * 0.02 + 0.01,
+          pulseSpeed: Math.random() * 0.015 + 0.008,
         });
       }
     };
 
     const drawGrid = () => {
       const spacing = 40;
-      ctx.strokeStyle = "hsla(221,83%,53%,0.1)";
+      ctx.strokeStyle = "hsla(221,83%,53%,0.12)";
       ctx.lineWidth = 0.6;
+      
+      // Vertical lines
       for (let x = 0; x <= width; x += spacing) {
         ctx.beginPath();
         ctx.moveTo(x, 0);
         ctx.lineTo(x, height);
         ctx.stroke();
       }
+      
+      // Horizontal lines
       for (let y = 0; y <= height; y += spacing) {
         ctx.beginPath();
         ctx.moveTo(0, y);
@@ -73,7 +77,7 @@ const HeroBackground = () => {
       }
 
       // Draw subtle dots at intersections
-      ctx.fillStyle = "hsla(221,83%,53%,0.12)";
+      ctx.fillStyle = "hsla(221,83%,53%,0.10)";
       for (let x = 0; x <= width; x += spacing) {
         for (let y = 0; y <= height; y += spacing) {
           ctx.beginPath();
@@ -87,6 +91,7 @@ const HeroBackground = () => {
       ctx.clearRect(0, 0, width, height);
       drawGrid();
 
+      // Draw floating particles
       for (const p of particles) {
         p.x += p.vx;
         p.y += p.vy;
@@ -100,11 +105,11 @@ const HeroBackground = () => {
         const scale = 250 / p.z;
         const r = p.size * scale;
         const pulseAlpha = 0.5 + Math.sin(p.pulse) * 0.3;
-        const alpha = Math.min(scale * 0.5, 0.6) * pulseAlpha;
+        const alpha = Math.min(scale * 0.4, 0.5) * pulseAlpha; // Slightly more subtle
 
         // Soft glow
         const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r * 3);
-        gradient.addColorStop(0, `hsla(221,83%,60%,${alpha * 0.2})`);
+        gradient.addColorStop(0, `hsla(221,83%,60%,${alpha * 0.15})`);
         gradient.addColorStop(1, `hsla(221,83%,60%,0)`);
         ctx.fillStyle = gradient;
         ctx.beginPath();
@@ -118,15 +123,15 @@ const HeroBackground = () => {
         ctx.fill();
       }
 
-      // Connection lines
-      ctx.lineWidth = 0.4;
+      // Connection lines between particles
+      ctx.lineWidth = 0.3;
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < 120) {
-            const alpha = (1 - dist / 120) * 0.1;
+          if (dist < 100) { // Shorter connection distance for header
+            const alpha = (1 - dist / 100) * 0.08;
             ctx.strokeStyle = `hsla(221,83%,53%,${alpha})`;
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
@@ -150,12 +155,14 @@ const HeroBackground = () => {
   }, []);
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none bg-neuro-bg">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
       <canvas ref={canvasRef} className="absolute inset-0" />
-      <div className="absolute -top-40 -right-40 w-[500px] h-[500px] rounded-full bg-primary/5 blur-3xl" />
-      <div className="absolute -bottom-40 -left-40 w-[400px] h-[400px] rounded-full bg-accent/5 blur-3xl" />
+      {/* Color blur effects for header */}
+      <div className="absolute -top-20 -right-20 w-[200px] h-[200px] rounded-full bg-primary/4 blur-3xl" />
+      <div className="absolute -top-20 -left-20 w-[150px] h-[150px] rounded-full bg-accent/3 blur-3xl" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-neuro-bg/10 to-neuro-bg/60" />
     </div>
   );
 };
 
-export default HeroBackground;
+export default HeaderBackground;

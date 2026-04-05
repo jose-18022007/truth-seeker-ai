@@ -21,7 +21,7 @@ const Navbar = () => {
       initial={{ x: "-50%", y: -60, opacity: 0 }}
       animate={{ x: "-50%", y: 0, opacity: 1 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className={`fixed left-1/2 top-4 z-50 w-[calc(100vw-2rem)] max-w-4xl rounded-2xl transition-all duration-300 neuro-card-flat ${
+      className={`fixed left-1/2 top-4 z-[60] w-[calc(100vw-2rem)] max-w-4xl rounded-2xl transition-all duration-300 neuro-card-flat ${
         scrolled ? "!shadow-none" : ""
       }`}
       style={scrolled ? {
@@ -40,16 +40,24 @@ const Navbar = () => {
           </span>
         </Link>
 
-        <div className="hidden items-center gap-6 md:flex">
+        <div className="hidden items-center gap-4 md:flex">
           <Link
             to="/"
-            className={`text-sm font-medium transition-colors ${isHome ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
+            className={`text-sm font-medium transition-all px-4 py-2 rounded-xl ${
+              isHome 
+                ? "text-primary neuro-badge-inset" 
+                : "text-muted-foreground hover:text-foreground neuro-btn-nav"
+            }`}
           >
             Home
           </Link>
           <Link
             to="/analyze"
-            className={`text-sm font-medium transition-colors ${location.pathname === "/analyze" ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
+            className={`text-sm font-medium transition-all px-4 py-2 rounded-xl ${
+              location.pathname === "/analyze" 
+                ? "text-primary neuro-badge-inset" 
+                : "text-muted-foreground hover:text-foreground neuro-btn-nav"
+            }`}
           >
             Analyze
           </Link>
@@ -75,10 +83,18 @@ const Navbar = () => {
           >
             <div className="neuro-divider mx-4" />
             <div className="flex flex-col gap-3 p-4">
-              <Link to="/" className="text-sm font-medium text-foreground" onClick={() => setMobileOpen(false)}>
+              <Link 
+                to="/" 
+                className="text-sm font-medium text-foreground neuro-btn-nav px-4 py-2 rounded-xl text-center" 
+                onClick={() => setMobileOpen(false)}
+              >
                 Home
               </Link>
-              <Link to="/analyze" className="text-sm font-medium text-foreground" onClick={() => setMobileOpen(false)}>
+              <Link 
+                to="/analyze" 
+                className="text-sm font-medium text-foreground neuro-btn-nav px-4 py-2 rounded-xl text-center" 
+                onClick={() => setMobileOpen(false)}
+              >
                 Analyze
               </Link>
               <Link to="/analyze" onClick={() => setMobileOpen(false)}>

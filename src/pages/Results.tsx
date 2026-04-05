@@ -4,9 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Download, Share2, RotateCcw, Clock, ShieldCheck } from "lucide-react";
 import confetti from "canvas-confetti";
 import VerdictBadge from "@/components/VerdictBadge";
-import ScoreRing from "@/components/ScoreRing";
 import SourceCard from "@/components/SourceCard";
 import SkeletonLoader from "@/components/SkeletonLoader";
+import ApiLimitAlert from "@/components/ApiLimitAlert";
 
 interface AnalysisInput {
   text: string | null;
@@ -27,84 +27,65 @@ interface AnalysisResult {
   processing_time_ms: number;
 }
 
-const DEMO_RESPONSE: AnalysisResult = {
-  main_claim: "Drinking hot water cures COVID instantly.",
-  truth_engine: {
-    verdict: "FALSE",
-    corrected_info: "No scientific evidence supports hot water as a COVID treatment. WHO recommends vaccination and approved antivirals.",
-    explanation: "This claim matches a known misinformation pattern circulated during the COVID-19 pandemic. Multiple health authorities including the WHO and CDC have explicitly refuted it. Hot water has no antiviral properties against SARS-CoV-2. The claim appears to originate from social media chains and has been debunked by several fact-checking organizations.",
-    confidence: "high",
-    sources: [
-      { title: "WHO: Myth busters - Coronavirus", url: "https://www.who.int/emergencies/diseases/novel-coronavirus-2019/advice-for-public/myth-busters" },
-      { title: "CDC: COVID-19 Prevention", url: "https://www.cdc.gov/coronavirus/2019-ncov/prevent-getting-sick/prevention.html" },
-      { title: "Reuters Fact Check", url: "https://www.reuters.com/fact-check" },
-    ],
-  },
-  processing_time_ms: 2340,
-};
-
-const API_URL = import.meta.env.VITE_API_URL || "";
-
-const getScores = (engine: TruthEngine) => {
-  const verdictMap = { TRUE: 95, FALSE: 15, MISLEADING: 40, UNVERIFIABLE: 50 };
-  const confMap = { high: 90, medium: 65, low: 30 };
-  const sourceScore = Math.min(engine.sources.length * 25, 100);
-  const accuracy = verdictMap[engine.verdict] ?? 50;
-  const confidence = confMap[engine.confidence] ?? 30;
-  const overall = Math.round((accuracy + confidence + sourceScore) / 3);
-  return { accuracy, confidence, sourceScore, overall };
-};
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 const Results = ({ inputData }: { inputData: AnalysisInput | null }) => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showApiLimitAlert, setShowApiLimitAlert] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  const analyzeData = async () => {
     if (!inputData) {
       navigate("/analyze");
       return;
     }
 
-    const analyze = async () => {
-      setLoading(true);
-      setError(null);
+    setLoading(true);
+    setError(null);
+    setShowApiLimitAlert(false);
 
-      if (!API_URL) {
-        await new Promise((r) => setTimeout(r, 2500));
-        setData(DEMO_RESPONSE);
+    try {
+      let res: Response;
+      if (inputData.text) {
+        res = await fetch(`${API_URL}/analyze/text`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: inputData.text }),
+        });
+      } else if (inputData.file) {
+        const fd = new FormData();
+        fd.append("file", inputData.file);
+        res = await fetch(`${API_URL}/analyze/image`, { method: "POST", body: fd });
+      } else {
+        throw new Error("No input provided");
+      }
+
+      if (res.status === 429) {
+        // API limit reached
+        setShowApiLimitAlert(true);
         setLoading(false);
         return;
       }
 
-      try {
-        let res: Response;
-        if (inputData.text) {
-          res = await fetch(`${API_URL}/analyze/text`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ text: inputData.text }),
-          });
-        } else if (inputData.file) {
-          const fd = new FormData();
-          fd.append("file", inputData.file);
-          res = await fetch(`${API_URL}/analyze/image`, { method: "POST", body: fd });
-        } else {
-          throw new Error("No input provided");
-        }
-        if (!res.ok) throw new Error(`Analysis failed (${res.status})`);
-        const json = await res.json();
-        setData(json);
-      } catch (err: unknown) {
-        await new Promise((r) => setTimeout(r, 2000));
-        setData(DEMO_RESPONSE);
-      } finally {
-        setLoading(false);
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.detail || `Analysis failed (${res.status})`);
       }
-    };
 
-    analyze();
+      const json = await res.json();
+      setData(json);
+    } catch (err: unknown) {
+      console.error("Analysis error:", err);
+      setError(err instanceof Error ? err.message : "Analysis failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    analyzeData();
   }, [inputData, navigate]);
 
   useEffect(() => {
@@ -134,9 +115,20 @@ const Results = ({ inputData }: { inputData: AnalysisInput | null }) => {
     }
   };
 
+  if (showApiLimitAlert) {
+    return (
+      <AnimatePresence>
+        <ApiLimitAlert
+          onRetry={analyzeData}
+          onClose={() => navigate("/analyze")}
+        />
+      </AnimatePresence>
+    );
+  }
+
   if (loading) {
     return (
-      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12">
+      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 pt-24 bg-neuro-bg">
         <SkeletonLoader />
       </div>
     );
@@ -144,20 +136,25 @@ const Results = ({ inputData }: { inputData: AnalysisInput | null }) => {
 
   if (error || !data) {
     return (
-      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12">
+      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center py-12 pt-24 bg-neuro-bg">
         <div className="text-center max-w-md mx-auto px-4 neuro-card p-10">
-          <h2 className="text-2xl font-bold text-foreground mb-4">Something went wrong</h2>
-          <p className="text-muted-foreground mb-6">{error || "No results available."}</p>
-          <button className="neuro-btn-blue px-6 py-3 font-semibold" onClick={() => navigate("/analyze")}>Try Again</button>
+          <h2 className="text-2xl font-bold text-foreground mb-4">Analysis Failed</h2>
+          <p className="text-muted-foreground mb-6">{error || "Unable to analyze the content. Please try again."}</p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <button className="neuro-btn-blue px-6 py-3 font-semibold" onClick={analyzeData}>
+              Try Again
+            </button>
+            <button className="neuro-btn px-6 py-3 font-semibold text-foreground" onClick={() => navigate("/analyze")}>
+              Go Back
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
-  const scores = getScores(data.truth_engine);
-
   return (
-    <div className="min-h-[calc(100vh-4rem)] py-12">
+    <div className="min-h-[calc(100vh-4rem)] py-12 pt-24 bg-neuro-bg">
       <div className="container mx-auto px-4 max-w-4xl">
         <AnimatePresence>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
@@ -189,27 +186,11 @@ const Results = ({ inputData }: { inputData: AnalysisInput | null }) => {
               </div>
             </motion.div>
 
-            {/* Score rings */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="neuro-card p-8"
-            >
-              <h2 className="text-lg font-semibold text-foreground mb-6 text-center">Score Breakdown</h2>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <ScoreRing value={scores.overall} label="Overall" size={100} />
-                <ScoreRing value={scores.accuracy} label="Accuracy" size={100} />
-                <ScoreRing value={scores.confidence} label="Confidence" size={100} />
-                <ScoreRing value={scores.sourceScore} label="Sources" size={100} />
-              </div>
-            </motion.div>
-
             {/* Explanation */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
+              transition={{ delay: 0.4 }}
               className="neuro-card p-6 space-y-5"
             >
               <div>
